@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-require('babel-register')({
-	presets: ['latest']
-});
-// require('babel-core/register');
-
 import {
     fulex,
     traverse,
@@ -85,11 +80,7 @@ import {
 	addComponent
 } from './gengine/indexManager.js';
 
-import {
-	preprocess,
-	process
-} from './gengine/gEngine.js';
-
+import {preProcess, process} from './gengine/gengine.js';
 
 export default {
 	fulex,
@@ -141,6 +132,7 @@ export default {
 	getComponentsTree,
 	getComponentsNames,
 	addComponent,
-	preprocess,
+
+	preProcess,
 	process
 }
