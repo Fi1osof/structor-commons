@@ -1,0 +1,16 @@
+[
+  {
+    "namespace": "#html",
+    "type": "a",
+    "variant": "default",
+    "props": {
+      "href": "#"
+    },
+    "children": [
+      {
+        "type": "span",
+        "text": "Link text"
+      }
+    ]
+  }
+]

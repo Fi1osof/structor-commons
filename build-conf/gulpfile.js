@@ -10,6 +10,6 @@ gulp.task('clean', function(){
 gulp.task('build', ['clean'], function() {
     return gulp.src('../src/**/*.js')
         .pipe(babel())
-        .pipe(uglify())
+        // .pipe(uglify())
         .pipe(gulp.dest('../distr'));
 });

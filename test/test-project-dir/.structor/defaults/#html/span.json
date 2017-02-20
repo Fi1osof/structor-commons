@@ -1,0 +1,10 @@
+[
+  {
+    "namespace": "#html",
+    "type": "span",
+    "variant": "default",
+    "props": {},
+    "children": [],
+    "text": "Text"
+  }
+]

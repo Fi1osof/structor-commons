@@ -1,0 +1,10 @@
+[
+  {
+    "namespace": "#html",
+    "type": "option",
+    "variant": "default",
+    "props": {},
+    "children": [],
+    "text": "select option"
+  }
+]

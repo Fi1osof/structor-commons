@@ -1,0 +1,14 @@
+[
+  {
+    "namespace": "#html",
+    "type": "th",
+    "variant": "default",
+    "props": {},
+    "children": [
+      {
+        "type": "span",
+        "text": "Text in th"
+      }
+    ]
+  }
+]

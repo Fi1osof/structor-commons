@@ -1,0 +1,19 @@
+[
+  {
+    "namespace": "#html",
+    "type": "nav",
+    "variant": "default",
+    "props": {},
+    "children": [
+      {
+        "type": "p",
+        "children": [
+          {
+            "type": "span",
+            "text": "Navigation"
+          }
+        ]
+      }
+    ]
+  }
+]

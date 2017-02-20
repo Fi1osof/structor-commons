@@ -1,0 +1,19 @@
+[
+  {
+    "namespace": "#html",
+    "type": "main",
+    "variant": "default",
+    "props": {},
+    "children": [
+      {
+        "type": "p",
+        "children": [
+          {
+            "type": "span",
+            "text": "Main"
+          }
+        ]
+      }
+    ]
+  }
+]

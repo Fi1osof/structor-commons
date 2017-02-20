@@ -1,0 +1,14 @@
+[
+  {
+    "namespace": "#html",
+    "type": "button",
+    "variant": "default",
+    "props": {},
+    "children": [
+      {
+        "type": "span",
+        "text": "Button"
+      }
+    ]
+  }
+]

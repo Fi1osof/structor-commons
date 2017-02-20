@@ -1,0 +1,19 @@
+[
+  {
+    "namespace": "#html",
+    "type": "blockquote",
+    "variant": "default",
+    "props": {},
+    "children": [
+      {
+        "type": "p",
+        "children": [
+          {
+            "type": "span",
+            "text": "This is a quotation"
+          }
+        ]
+      }
+    ]
+  }
+]

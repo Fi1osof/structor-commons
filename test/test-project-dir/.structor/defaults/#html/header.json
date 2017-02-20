@@ -1,0 +1,19 @@
+[
+  {
+    "namespace": "#html",
+    "type": "header",
+    "variant": "default",
+    "props": {},
+    "children": [
+      {
+        "type": "p",
+        "children": [
+          {
+            "type": "span",
+            "text": "Header"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "namespace": "#html",
+    "type": "form",
+    "variant": "default",
+    "props": {},
+    "children": [
+      {
+        "type": "span",
+        "text": "Empty form"
+      }
+    ]
+  }
+]

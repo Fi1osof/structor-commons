@@ -20,43 +20,8 @@ import esprima from 'esprima';
 import escodegen from 'escodegen';
 import * as fileManager from '../commons/fileManager.js';
 import {traverse, parse} from '../commons/utils.js';
-
-export function findExportsNode(ast) {
-    let exports = null;
-    traverse(ast, node => {
-        if(node.type === 'ExportDefaultDeclaration'){
-            exports = node.declaration;
-        }
-    });
-    return exports;
-}
-
-export function findImports(ast){
-    let imports = {};
-    traverse(ast, node => {
-        if(node.type === 'ImportDeclaration'){
-            const {specifiers, source} = node;
-            if(specifiers && specifiers.length > 0 && source){
-                specifiers.forEach(specifier => {
-                    const {type, local} = specifier;
-                    const {value} = source;
-                    if((type === 'ImportDefaultSpecifier')
-                        && local
-                        && local.type === 'Identifier'
-                        && value){
-                        imports[local.name] = { source: value };
-                    } else if((type === 'ImportSpecifier')
-                        && local
-                        && local.type === 'Identifier'
-                        && value){
-                        imports[local.name] = { source: value, member: true };
-                    }
-                });
-            }
-        }
-    });
-    return imports;
-}
+import {findExportsNode, findImports} from '../commons/astUtils.js';
+import * as config from '../configuration.js';
 
 function appendToNode(node, variableString) {
     var newAst = esprima.parse('var c = {' + variableString + '}');
@@ -185,18 +150,19 @@ function getComponentsNamesFromTree(componentsTree) {
     return componentsNames;
 }
 
-export function initIndex(deskIndexFilePath, appDirPath) {
-    return parseIndexFile(deskIndexFilePath)
+export function initIndex() {
+
+    return parseIndexFile(config.deskIndexFilePath())
         .then((ast) => {
-            return resolveAbsoluteSourcePath(getStructure(ast), appDirPath);
+            return resolveAbsoluteSourcePath(getStructure(ast), config.appDirPath());
         })
         .then(indexObject => {
             return indexObject;
         });
 }
 
-export function getComponentsTree(deskIndexFilePath, appDirPath) {
-    return initIndex(deskIndexFilePath, appDirPath)
+export function getComponentsTree() {
+    return initIndex()
         .then(indexObj => {
             let result = {};
             if (indexObj && indexObj.groups) {

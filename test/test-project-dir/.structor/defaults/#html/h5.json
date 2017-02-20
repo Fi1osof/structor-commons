@@ -1,0 +1,14 @@
+[
+  {
+    "namespace": "#html",
+    "type": "h5",
+    "variant": "default",
+    "props": {},
+    "children": [
+      {
+        "type": "span",
+        "text": "Empty h5"
+      }
+    ]
+  }
+]

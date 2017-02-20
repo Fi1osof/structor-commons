@@ -1,0 +1,11 @@
+[
+  {
+    "namespace": "#html",
+    "type": "i",
+    "variant": "default",
+    "props": {
+      "className": "fa fa-star"
+    },
+    "children": []
+  }
+]

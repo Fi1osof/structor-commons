@@ -1,0 +1,14 @@
+[
+  {
+    "namespace": "#html",
+    "type": "p",
+    "variant": "default",
+    "props": {},
+    "children": [
+      {
+        "type": "span",
+        "text": "Empty p"
+      }
+    ]
+  }
+]

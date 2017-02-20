@@ -15,124 +15,69 @@
  */
 
 import {
-    fulex,
-    traverse,
-    traverseWithResult,
-    traverseModel,
-    traverseModelWithResult,
-    parse,
-    generate,
-    formatJs,
-    writeErrorFileFor,
-} from './commons/utils.js';
+	SERVICE_DIR,
+	READY,
+	EMPTY,
+	getProjectDir,
+	reinit,
+	init,
+	status,
+	getDebugMode,
+	asObject,
+	appDirPath,
+	webpackConfigFilePath,
+	deskEntryPointFilePath,
+	deskDirPath,
+	deskModelFilePath,
+	deskSourceDirPath,
+	deskIndexFilePath,
+	deskReducersFilePath,
+	deskSagasFilePath,
+	nodeModulesDirPath,
+	componentDefaultsDirPath,
+	docsComponentsDirPath,
+	templatesDirPath,
+	getProjectConfig,
+	projectProxyURL,
+	appAssetsDirPath,
+	gengineDirPath,
+	scaffoldsDirPath
+} from './configuration.js';
 
-import {
-    getModelComponentMap
-} from './commons/modelParser.js';
+export const config = {
+	SERVICE_DIR,
+	READY,
+	EMPTY,
+	getProjectDir,
+	reinit,
+	init,
+	status,
+	getDebugMode,
+	asObject,
+	appDirPath,
+	webpackConfigFilePath,
+	deskEntryPointFilePath,
+	deskDirPath,
+	deskModelFilePath,
+	deskSourceDirPath,
+	deskIndexFilePath,
+	deskReducersFilePath,
+	deskSagasFilePath,
+	nodeModulesDirPath,
+	componentDefaultsDirPath,
+	docsComponentsDirPath,
+	templatesDirPath,
+	getProjectConfig,
+	projectProxyURL,
+	appAssetsDirPath,
+	gengineDirPath,
+	scaffoldsDirPath
+};
 
-import {
-	ensureFilePath,
-	ensureDirPath,
-    readFile,
-    writeFile,
-    writeBinaryFile,
-    placeInPosition,
-    copyFiles,
-	copyFilesNoError,
-    copyFile,
-    traverseDirTree,
-    isExisting,
-	findComponentFilePath,
-    readDirectoryTree,
-    readDirectory,
-    readDirectoryFiles,
-    readDirectoryFlat,
-    checkDirIsEmpty,
-    readJson,
-    writeJson,
-    removeFile,
-	unpackTarGz,
-	unpackTar,
-	repackTarGzOmitRootDir,
-	packTarGz
-} from './commons/fileManager.js';
+import commonsAPI from './commons/index';
+import gengineAPI from './gengine/index';
+import storageAPI from './storage/index';
 
-import {
-	installPackages,
-	installDefault,
-	getNpmConfigVariable,
-	setNpmConfigVariable,
-	getPackageAbsolutePath,
-	getPackageVersion
-} from './commons/npmUtils.js';
-
-import {
-	getReducerProperty
-} from './gengine/reducersFileUtils.js';
-
-import {
-	findExportsNode,
-	findImports,
-	getStructure,
-	initIndex,
-	getComponentsTree,
-	getComponentsNames,
-	addComponent
-} from './gengine/indexManager.js';
-
-import {preProcess, process} from './gengine/gengine.js';
-
-export default {
-	fulex,
-	traverse,
-	traverseWithResult,
-	traverseModel,
-	traverseModelWithResult,
-	parse,
-	generate,
-	formatJs,
-	writeErrorFileFor,
-	getModelComponentMap,
-	ensureFilePath,
-	ensureDirPath,
-	readFile,
-	writeFile,
-	writeBinaryFile,
-	placeInPosition,
-	copyFiles,
-	copyFilesNoError,
-	copyFile,
-	traverseDirTree,
-	isExisting,
-	findComponentFilePath,
-	readDirectoryTree,
-	readDirectory,
-	readDirectoryFiles,
-	readDirectoryFlat,
-	checkDirIsEmpty,
-	readJson,
-	writeJson,
-	removeFile,
-	unpackTarGz,
-	unpackTar,
-	repackTarGzOmitRootDir,
-	packTarGz,
-	installPackages,
-	installDefault,
-	getNpmConfigVariable,
-	setNpmConfigVariable,
-	getPackageAbsolutePath,
-	getPackageVersion,
-
-	getReducerProperty,
-	findExportsNode,
-	findImports,
-	getStructure,
-	initIndex,
-	getComponentsTree,
-	getComponentsNames,
-	addComponent,
-
-	preProcess,
-	process
-}
+export const commons = commonsAPI;
+export const gengine = gengineAPI;
+export const storage = storageAPI;
