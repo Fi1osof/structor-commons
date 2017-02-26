@@ -3,10 +3,14 @@ import {
 	findImports,
 	getStructure,
 	initIndex,
-	getComponentsTree,
+	// getComponentsTree,
 	getComponentsNames,
 	addComponent
 } from './indexManager.js';
+
+import {
+	getComponentTree
+} from './indexManagerNew.js';
 
 import {
 	initGeneratorData,
@@ -34,7 +38,7 @@ export default {
 	findImports,
 	getStructure,
 	initIndex,
-	getComponentsTree,
+	getComponentTree,
 	getComponentsNames,
 	addComponent,
 	initGeneratorData,

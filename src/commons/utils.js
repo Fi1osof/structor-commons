@@ -15,7 +15,6 @@
  */
 
 import _ from 'lodash';
-import fs from 'fs-extra';
 import path from 'path';
 import esformatter from 'esformatter';
 import esformatterOptions from './esformatterUtils.js';
@@ -115,3 +114,9 @@ export function writeErrorFileFor(outputFilePath, fileData){
     return errorFilePath;
 }
 
+export function repairPath(srcPath) {
+    if (srcPath && srcPath.length > 0) {
+        return srcPath.replace(/\\/g, '/');
+    }
+    return srcPath;
+}

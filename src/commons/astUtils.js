@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {traverse} from './utils.js';
+import {traverse, traverseWithResult} from './utils.js';
 
 export function findExportsNode(ast) {
 	let exports = null;
@@ -26,7 +26,7 @@ export function findExportsNode(ast) {
 	return exports;
 }
 
-export function findImports(ast){
+export function getImportsObject(ast){
 	let imports = {};
 	traverse(ast, node => {
 		if(node.type === 'ImportDeclaration'){
@@ -51,4 +51,32 @@ export function findImports(ast){
 		}
 	});
 	return imports;
+}
+
+export function getExportObject(astNode) {
+	let resultObject = {};
+	traverseWithResult(astNode, (node, object) => {
+		const {type, key, value} = node;
+		if (value && key && type === 'Property') {
+			if (key.type === 'Identifier') {
+				if (value.type === 'Identifier') {
+					object[key.name] = value.name;
+					return object;
+				} else if (value.type === 'ObjectExpression') {
+					object[key.name] = object[key.name] || {};
+					return object[key.name];
+				}
+			} else if (key.type === 'Literal') {
+				if (value.type === 'Identifier') {
+					object[key.value] = value.name;
+					return object;
+				} else if (value.type === 'ObjectExpression') {
+					object[key.value] = object[key.name] || {};
+					return object[key.name];
+				}
+			}
+		}
+		return object;
+	}, resultObject);
+	return resultObject;
 }

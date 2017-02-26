@@ -4,7 +4,7 @@ var {storage, commons, config} = require('../../distr/index.js');
 
 initEnv()
 	.then(() => {
-		return storage.getComponentsTree();
+		return storage.getComponentTree();
 	})
 	.then(tree => {
 		console.log(JSON.stringify(tree, null, 4));

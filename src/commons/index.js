@@ -8,6 +8,7 @@ import {
 	generate,
 	formatJs,
 	writeErrorFileFor,
+	repairPath
 } from './utils.js';
 
 import {
@@ -60,6 +61,7 @@ export default {
 	generate,
 	formatJs,
 	writeErrorFileFor,
+	repairPath,
 	getModelComponentMap,
 	ensureFilePath,
 	ensureDirPath,
