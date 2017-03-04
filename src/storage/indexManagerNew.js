@@ -35,6 +35,7 @@ componentsTree = {
 			name,
 			importPath,
 			absolutePath,
+			absoluteIndexFilePath,
 			isContainer,
  			isLibMember,
 			defaults: []
@@ -50,6 +51,7 @@ componentsTree = {
 					name,
 					importPath,
 					absolutePath,
+ 					absoluteIndexFilePath,
 					isContainer,
 					isLibMember,
 					defaults: []
@@ -209,6 +211,7 @@ function fulfillComponentDef(componentDef, moduleDef = {}) {
 						return isExisting(indexFilePath);
 					})
 					.then(() => {
+						result.absoluteIndexFilePath = indexFilePath;
 						if (result.isContainer) {
 							let reducerFilePath = path.join(absolutePath, 'reducer.js');
 							return isExisting(reducerFilePath);
@@ -255,7 +258,6 @@ function fulfillHtmlComponents() {
 								})
 								.catch(error => {
 									let defaultDef = {
-										namespace: '#html',
 										type: htmlComponentName,
 										variant: 'default',
 										children: [],

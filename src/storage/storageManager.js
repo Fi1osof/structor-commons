@@ -43,8 +43,15 @@ export function readDefaults(componentName){
         });
 }
 
-export function readComponentDocument(componentName){
-    const componentNoteFilePath = path.join(config.docsComponentsDirPath(), componentName + '.md').replace(/\\/g, '/');
+export function readComponentDocument(componentName, namespace){
+    let componentNoteFilePath;
+    if (namespace) {
+        componentNoteFilePath =
+            path.join(config.docsComponentsDirPath(), namespace, componentName + '.md').replace(/\\/g, '/');
+    } else {
+        componentNoteFilePath =
+            path.join(config.docsComponentsDirPath(), componentName + '.md').replace(/\\/g, '/');
+    }
     return readFile(componentNoteFilePath)
         .then( fileData => {
             fileData = fileData || 'Component does not have notes';
