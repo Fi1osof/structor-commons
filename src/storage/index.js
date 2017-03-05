@@ -3,7 +3,6 @@ import {
 	findImports,
 	getStructure,
 	initIndex,
-	// getComponentsTree,
 	getComponentsNames,
 	addComponent
 } from './indexManager.js';
@@ -14,8 +13,6 @@ import {
 
 import {
 	initGeneratorData,
-	invokePreGeneration,
-	invokeGeneration,
 	installDependencies,
 	saveGenerated
 } from './generatorManager.js';
@@ -42,8 +39,6 @@ export default {
 	getComponentsNames,
 	addComponent,
 	initGeneratorData,
-	invokePreGeneration,
-	invokeGeneration,
 	installDependencies,
 	saveGenerated,
 	getScaffoldGenerators,

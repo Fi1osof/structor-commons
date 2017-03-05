@@ -21,7 +21,7 @@ const GENERATOR_CONFIG_NAME = 'generator.js';
 const GENERATOR_README_NAME = 'readme.md';
 const GENERATOR_SCREENSHOT_NAME = 'screenshot';
 
-export function getScaffoldGenerators (scaffoldsUrlPrefix) {
+export function getScaffoldGenerators () {
 	let generators = [];
 	const rootDir = config.scaffoldsDirPath();
 	return readDirectoryFlat(rootDir)
@@ -44,7 +44,7 @@ export function getScaffoldGenerators (scaffoldsUrlPrefix) {
 													generatorObject.name = dir.name;
 												}
 												if (file.name.indexOf(GENERATOR_SCREENSHOT_NAME) >= 0) {
-													generatorObject.screenshotFilePath = file.path.replace(rootDir, scaffoldsUrlPrefix);
+													generatorObject.screenshotFilePath = file.path;
 												}
 												if (file.name === GENERATOR_README_NAME) {
 													generatorObject.readmeFilePath = file.path;

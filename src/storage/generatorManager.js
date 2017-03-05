@@ -16,13 +16,12 @@
 
 import { forOwn, has } from 'lodash';
 import * as config from '../configuration.js';
-import {initIndex} from './indexManager.js';
+import {getComponentTree} from './indexManagerNew.js';
 import {readFile, ensureFilePath, writeFile} from '../commons/fileManager.js';
 import {getPackageAbsolutePath, installPackages} from '../commons/npmUtils.js';
-import {preProcess, process} from '../gengine/gengine.js';
 
-export function initGeneratorData(groupName, componentName, model, metadata) {
-    return initIndex(config.deskIndexFilePath(), config.appDirPath())
+export function initGeneratorData(namespace, componentName, model, metadata) {
+    return getComponentTree()
         .then(index => {
             let fileReaders = [];
             let project = config.getProjectConfig();
@@ -56,22 +55,8 @@ export function initGeneratorData(groupName, componentName, model, metadata) {
             return Promise.all(fileReaders)
                 .then(() => {
                     project.sources = fileSources;
-                    return {groupName, componentName, model, metadata, project, index};
+                    return {namespace, componentName, model, metadata, project, index};
                 });
-        });
-}
-
-export function invokePreGeneration(groupName, componentName, model, generatorDirPath) {
-    return initGeneratorData(groupName, componentName, model)
-        .then(data => {
-            return preProcess(generatorDirPath, data);
-        });
-}
-
-export function invokeGeneration(groupName, componentName, model, metadata, generatorDirPath) {
-    return initGeneratorData(groupName, componentName, model, metadata)
-        .then(data => {
-            return process(generatorDirPath, data);
         });
 }
 
