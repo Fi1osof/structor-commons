@@ -18,12 +18,19 @@ import path from 'path';
 import {forOwn, isObject, isEmpty, clone, pick} from 'lodash';
 import * as config from '../configuration.js';
 import {readFile, readJson, readDirectoryFlat, isExisting} from '../commons/fileManager.js';
-import {traverse, traverseModelWithResult, parse, generate, repairPath} from '../commons/utils.js';
-import {getImportsObject, findExportsNode, getExportObject} from '../commons/astUtils.js';
+import {parse, repairPath} from '../commons/utils.js';
+import {
+	getImportsObject,
+	findExportsNode,
+	getExportObject,
+	getNamedExportObject
+} from '../commons/astUtils.js';
 
 /*
 
 componentsTree = {
+	indexFilePath,
+	indexSourceCode,
 	htmlComponents: {
 		[name]: {
 			name,
@@ -46,6 +53,8 @@ componentsTree = {
 			name,
 			importPath,
 			absolutePath,
+			indexFilePath,
+			indexSourceCode,
 			components: {
 				[name]: {
 					name,
@@ -105,7 +114,7 @@ function assignImport(importDef, moduleImportPath) {
 						componentDef.isModule = true;
 					} else if (!sourceParts[0].startsWith('.')) {
 						componentDef.isLibMember = true;
-						componentDef.importPath = source;
+						componentDef.importPath = moduleImportPath || source;
 						delete componentDef.absolutePath;
 					}
 				}
@@ -129,14 +138,16 @@ function getIndexRefs(filePath, moduleDef = {}) {
 	};
 	return readFile(filePath)
 		.then(fileData => {
+			componentTree.indexFilePath = filePath;
+			componentTree.indexSourceCode = fileData;
 			const ast = parse(fileData);
 			// console.log(JSON.stringify(ast, null, 4));
 			let imports = getImportsObject(ast);
-			// console.log(JSON.stringify(imports, null, 4));
-			let astNode = findExportsNode(ast);
-			// console.log(JSON.stringify(astNode, null, 4));
-			let exportObject = getExportObject(astNode);
-			// console.log(JSON.stringify(exportObject, null, 4));
+			let exportObject = getNamedExportObject(ast);
+			if (!exportObject) {
+				console.error('Export definition was not found in ', filePath);
+				return componentTree;
+			}
 			imports = reevaluateImports(imports);
 			forOwn(exportObject, (value, prop) => {
 				if (!isObject(value)) {
@@ -309,10 +320,16 @@ export function getComponentTree() {
 							return getIndexRefs(moduleIndexFilePath, moduleDef)
 								.then(moduleComponentTree => {
 									let moduleSequence = Promise.resolve();
-									let {components: moduleComponents} = moduleComponentTree;
+									let {
+										components: moduleComponents,
+										indexFilePath: moduleIndexFilePath,
+										indexSourceCode: moduleIndexSourceCode
+									} = moduleComponentTree;
 									// validating components
 									if (moduleComponents && !isEmpty(moduleComponents)) {
 										moduleDef.components = moduleComponents;
+										moduleDef.indexSourceCode = moduleIndexSourceCode;
+										moduleDef.indexFilePath = moduleIndexFilePath;
 										forOwn(moduleComponents, (componentDef, componentId) => {
 											moduleSequence = moduleSequence.then(() => {
 												return fulfillComponentDef(componentDef, moduleDef)

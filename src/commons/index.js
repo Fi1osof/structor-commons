@@ -1,4 +1,15 @@
 import {
+	findDefaultExportsNode,
+	findExportsNode,
+	getImportsObject,
+	getExportObject,
+	getNamedExportObject,
+	addNamespaceImport,
+	addDefaultImport,
+	addNamedExport
+} from './astUtils.js';
+
+import {
 	fulex,
 	traverse,
 	traverseWithResult,
@@ -52,6 +63,14 @@ import {
 } from './npmUtils.js';
 
 export default {
+	findDefaultExportsNode,
+	findExportsNode,
+	getImportsObject,
+	getExportObject,
+	getNamedExportObject,
+	addNamespaceImport,
+	addDefaultImport,
+	addNamedExport,
 	fulex,
 	traverse,
 	traverseWithResult,

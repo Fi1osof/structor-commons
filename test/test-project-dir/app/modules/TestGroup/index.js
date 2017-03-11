@@ -2,7 +2,7 @@ import FirstTestComponent from './components/FirstTestComponent';
 import SecondTestComponent from './components/SecondTestComponent';
 import ThirdTestContainer from './containers/ThirdTestContainer';
 
-export default {
+export {
 	FirstTestComponent,
 	SecondTestComponent,
 	ThirdTestContainer

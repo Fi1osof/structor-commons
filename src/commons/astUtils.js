@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 
+import {findIndex} from 'lodash';
 import {traverse, traverseWithResult} from './utils.js';
+
+export function findDefaultExportsNode(ast) {
+	let exports = null;
+	traverse(ast, node => {
+		if(node.type === 'ExportDefaultDeclaration'){
+			exports = node.declaration;
+		}
+	});
+	return exports;
+}
 
 export function findExportsNode(ast) {
 	let exports = null;
 	traverse(ast, node => {
-		if(node.type === 'ExportDefaultDeclaration'){
+		if(node.type === 'ExportDeclaration'){
 			exports = node.declaration;
 		}
 	});
@@ -35,7 +46,12 @@ export function getImportsObject(ast){
 				specifiers.forEach(specifier => {
 					const {type, local} = specifier;
 					const {value} = source;
-					if((type === 'ImportDefaultSpecifier')
+					if((type === 'ImportNamespaceSpecifier')
+						&& local
+						&& local.type === 'Identifier'
+						&& value){
+						imports[local.name] = { source: value };
+					} else if((type === 'ImportDefaultSpecifier')
 						&& local
 						&& local.type === 'Identifier'
 						&& value){
@@ -79,4 +95,165 @@ export function getExportObject(astNode) {
 		return object;
 	}, resultObject);
 	return resultObject;
+}
+
+export function getNamedExportObject(ast) {
+	let resultObject = undefined;
+	traverse(ast, node => {
+		if(node.type === 'ExportNamedDeclaration' && node.specifiers){
+			resultObject = {};
+			const {specifiers} = node;
+			specifiers.forEach(specifier => {
+				const {type, exported, local} = specifier;
+				if (exported && exported.name && local && local.name) {
+					resultObject[exported.name] = local.name;
+				}
+			});
+		}
+	});
+	return resultObject;
+}
+
+export function addNamespaceImport(ast, name, path) {
+	ast.body = ast.body || [];
+	if (ast.body.length > 0) {
+		const foundIndex = findIndex(ast.body, item => {
+			const {type, specifiers} = item;
+			if (type === 'ImportDeclaration' && specifiers) {
+				const {type: specifierType, local} = specifiers[0];
+				if (specifierType === 'ImportNamespaceSpecifier' && local) {
+					return local.name === name;
+				}
+			}
+			return false;
+		});
+		if (foundIndex >= 0) {
+			ast.body.splice(foundIndex, 1);
+		}
+	}
+	let injectIndex = -1;
+	for(let i = 0; i < ast.body.length; i++){
+		const {type} = ast.body[i];
+		if(type === 'ImportDeclaration'){
+			injectIndex = i;
+		}
+	}
+	ast.body.splice(injectIndex >= 0 ? injectIndex + 1 : 0, 0, {
+		type: "ImportDeclaration",
+		specifiers: [
+			{
+				type: "ImportNamespaceSpecifier",
+				local: {
+					type: "Identifier",
+					name: name
+				}
+			}
+		],
+		source: {
+			type: "Literal",
+			value: path,
+			raw: `'${path}'`
+		}
+	});
+	return ast;
+}
+
+export function addDefaultImport(ast, name, path) {
+	ast.body = ast.body || [];
+	if (ast.body.length > 0) {
+		const foundIndex = findIndex(ast.body, item => {
+			const {type, specifiers} = item;
+			if (type === 'ImportDeclaration' && specifiers) {
+				const {type: specifierType, local} = specifiers[0];
+				if (specifierType === 'ImportDefaultSpecifier' && local) {
+					return local.name === name;
+				}
+			}
+			return false;
+		});
+		if (foundIndex >= 0) {
+			ast.body.splice(foundIndex, 1);
+		}
+	}
+	let injectIndex = -1;
+	for(let i = 0; i < ast.body.length; i++){
+		const {type} = ast.body[i];
+		if(type === 'ImportDeclaration'){
+			injectIndex = i;
+		}
+	}
+	ast.body.splice(injectIndex >= 0 ? injectIndex + 1 : 0, 0, {
+		type: "ImportDeclaration",
+		specifiers: [
+			{
+				type: "ImportDefaultSpecifier",
+				local: {
+					type: "Identifier",
+					name: name
+				}
+			}
+		],
+		source: {
+			type: "Literal",
+			value: path,
+			raw: `'${path}'`
+		}
+	});
+	return ast;
+}
+
+export function addNamedExport(ast, name) {
+	let exportNamedNode;
+	traverse(ast, node => {
+		if(node.type === 'ExportNamedDeclaration'){
+			exportNamedNode = node;
+		}
+	});
+	if (exportNamedNode) {
+		exportNamedNode.specifiers = exportNamedNode.specifiers || [];
+		if (exportNamedNode.specifiers.length > 0) {
+			const foundIndex = findIndex(exportNamedNode.specifiers, item => {
+				const {type, exported, local} = item;
+				if (type === 'ExportSpecifier' && exported && local) {
+					return exported.name === name;
+				}
+			});
+			if (foundIndex >= 0) {
+				exportNamedNode.specifiers.splice(foundIndex, 1);
+			}
+		}
+		exportNamedNode.specifiers.push(
+			{
+				type: 'ExportSpecifier',
+				exported: {
+					type: 'Identifier',
+					name,
+				},
+				local: {
+					type: 'Identifier',
+					name,
+				}
+			}
+		);
+	} else {
+		ast.body = ast.body || [];
+		ast.body.push({
+			type: 'ExportNamedDeclaration',
+			declaration: null,
+			specifiers: [
+				{
+					type: 'ExportSpecifier',
+					exported: {
+						type: 'Identifier',
+						name,
+					},
+					local: {
+						type: 'Identifier',
+						name,
+					}
+				}
+			]
+		});
+	}
+	return ast;
 }

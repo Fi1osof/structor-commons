@@ -73,9 +73,17 @@ export function traverseWithResult(object, visitor, result) {
 export function traverseModel(node, visitor){
     visitor(node);
 
+    if(node.props){
+        _.forOwn(node.props, (prop, propName) => {
+            if (_.isObject(prop) && !_.isEmpty(prop)) {
+                traverseModel(prop, visitor);
+            }
+        });
+    }
+
     if(node.children && node.children.length > 0){
         node.children.forEach( child => {
-            traverseModelWithResult(child, visitor);
+            traverseModel(child, visitor);
         });
     }
 }
@@ -83,11 +91,21 @@ export function traverseModel(node, visitor){
 export function traverseModelWithResult(node, visitor, result){
     let _result = visitor(node, result);
 
-    if(node.children && node.children.length > 0){
-        node.children.forEach( child => {
-            traverseModelWithResult(child, visitor, _result);
+    if(node.props){
+        _.forOwn(node.props, (prop, propName) => {
+            if (_.isObject(prop) && !_.isEmpty(prop)) {
+                _result = traverseModelWithResult(prop, visitor, _result);
+            }
         });
     }
+
+    if(node.children && node.children.length > 0){
+        node.children.forEach( child => {
+            _result = traverseModelWithResult(child, visitor, _result);
+        });
+    }
+
+    return _result;
 }
 
 export function parse(inputData, options = {tolerant: true, range: false, comment: true, jsx: true}){

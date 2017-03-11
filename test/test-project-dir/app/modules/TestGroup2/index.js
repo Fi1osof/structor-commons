@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import {
-	Link,
-	IndexLink
-} from 'react-router';
+import FirstTestComponent from './components/FirstTestComponent';
+import SecondTestComponent from './components/SecondTestComponent';
+import ThirdTestContainer from './containers/ThirdTestContainer';
 
 export {
-	Link,
-	IndexLink,
+	FirstTestComponent,
+	SecondTestComponent,
+	ThirdTestContainer,
 }

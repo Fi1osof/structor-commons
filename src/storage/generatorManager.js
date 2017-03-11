@@ -23,40 +23,8 @@ import {getPackageAbsolutePath, installPackages} from '../commons/npmUtils.js';
 export function initGeneratorData(namespace, componentName, model, metadata) {
     return getComponentTree()
         .then(index => {
-            let fileReaders = [];
             let project = config.getProjectConfig();
-            let fileSources = {};
-            fileReaders.push(
-                readFile(config.deskIndexFilePath())
-                    .then(fileData => {
-                        fileSources.deskIndexFile = fileData;
-                    })
-            );
-            fileReaders.push(
-                readFile(config.deskReducersFilePath())
-                    .then(fileData => {
-                        fileSources.deskReducersFile = fileData;
-                    })
-            );
-            fileReaders.push(
-                readFile(config.deskSagasFilePath())
-                    .then(fileData => {
-                        fileSources.deskSagasFile = fileData;
-                    })
-            );
-            // forOwn(project.conf.files, (value, prop) => {
-            //     fileReaders.push(
-            //         readFile(value)
-            //             .then(fileData => {
-            //                 fileSources[prop] = fileData;
-            //             })
-            //     );
-            // });
-            return Promise.all(fileReaders)
-                .then(() => {
-                    project.sources = fileSources;
-                    return {namespace, componentName, model, metadata, project, index};
-                });
+            return {namespace, componentName, model, metadata, project, index};
         });
 }
 
@@ -134,8 +102,6 @@ export function saveGenerated(dependencies, files) {
                     })
                 );
             });
-            return Promise.all(fileSavers).then(() => {
-                return initIndex(config.deskIndexFilePath(), config.appDirPath());
-            });
+            return Promise.all(fileSavers);
         });
 }

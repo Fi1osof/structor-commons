@@ -2,18 +2,18 @@ import {
     Link,
     IndexLink
 } from 'react-router';
-import Router from 'modules/Router';
-import TestGroup from 'modules/TestGroup';
-import probeGroup from 'modules/probe-group';
-import FirstTestComponent from 'components/FirstTestComponent';
-import ThirdTestContainer from 'containers/ThirdTestContainer';
+import * as Router from 'modules/Router';
+import * as TestGroup from 'modules/TestGroup';
+import * as TestGroup2 from 'modules/TestGroup2';
+import * as FirstTestComponent from 'components/FirstTestComponent';
+import * as ThirdTestContainer from 'containers/ThirdTestContainer';
 
-export default {
+export {
     Link,
     IndexLink,
     Router,
     TestGroup,
-    "probe-group": probeGroup,
+    TestGroup2,
     FirstTestComponent,
     ThirdTestContainer
 };

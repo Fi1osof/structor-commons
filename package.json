@@ -4,6 +4,7 @@
   "description": "Structor Commons",
   "main": "distr/index.js",
   "scripts": {
+    "build-dev-meta": "gulp --gulpfile ./build-conf/gulpfile.js build-dev-meta",
     "build-dev": "gulp --gulpfile ./build-conf/gulpfile.js build-dev",
     "build": "gulp --gulpfile ./build-conf/gulpfile.js build"
   },
