@@ -27,20 +27,15 @@ function isFirstCharacterInUpperCase(text){
     return false;
 }
 
-export function readDefaults(componentName){
-    let lookupComponentName =
-        isFirstCharacterInUpperCase(componentName) ? componentName : ('html-' + componentName);
-    let filePath = path.join(config.componentDefaultsDirPath(), lookupComponentName + '.json').replace(/\\/g, '/');
-    return readJson(filePath)
-        .then(fileData => {
-            return writeJson(filePath, fileData)
-                .then(() => {
-                    return fileData;
-                });
-        })
-        .catch( err => {
-            return [];
-        });
+export function writeComponentDefaults(componentName, namespace, defaults) {
+    if (!isFirstCharacterInUpperCase(componentName)) {
+        namespace = "#html";
+    }
+    const filePath = namespace && namespace.length > 0 ?
+        path.join(config.componentDefaultsDirPath(), namespace, componentName + '.json').replace(/\\/g, '/')
+        :
+        path.join(config.componentDefaultsDirPath(), componentName + '.json').replace(/\\/g, '/');
+    return writeJson(filePath, defaults);
 }
 
 export function readComponentDocument(componentName, namespace){

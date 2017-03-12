@@ -21,8 +21,6 @@ import {readFile, readJson, readDirectoryFlat, isExisting} from '../commons/file
 import {parse, repairPath} from '../commons/utils.js';
 import {
 	getImportsObject,
-	findExportsNode,
-	getExportObject,
 	getNamedExportObject
 } from '../commons/astUtils.js';
 
@@ -31,6 +29,10 @@ import {
 componentsTree = {
 	indexFilePath,
 	indexSourceCode,
+	reducersFilePath,
+	reducersSourceCode,
+	sagasFilePath,
+	sagasSourceCode,
 	htmlComponents: {
 		[name]: {
 			name,
@@ -55,6 +57,10 @@ componentsTree = {
 			absolutePath,
 			indexFilePath,
 			indexSourceCode,
+	        reducerFilePath,
+		    reducerSourceCode,
+		    sagasFilePath,
+		    sagasSourceCode,
 			components: {
 				[name]: {
 					name,
@@ -290,9 +296,23 @@ function fulfillHtmlComponents() {
 }
 
 export function getComponentTree() {
-	const filePath = config.deskIndexFilePath();
-	return getIndexRefs(filePath)
-		.then(componentTree => {
+	let componentTree = {};
+	const componentsFilePath = config.deskIndexFilePath();
+	const reducersFilePath = config.deskReducersFilePath();
+	const sagasFilePath = config.deskSagasFilePath();
+	return readFile(reducersFilePath)
+		.then(reducersFileData => {
+			componentTree.reducersFilePath = reducersFilePath;
+			componentTree.reducersSourceCode = reducersFileData;
+			return readFile(sagasFilePath);
+		})
+		.then(sagasFileData => {
+			componentTree.sagasFilePath = sagasFilePath;
+			componentTree.sagasSourceCode = sagasFileData;
+			return getIndexRefs(componentsFilePath);
+		})
+		.then(tree => {
+			componentTree = Object.assign(componentTree, tree);
 			let {components, modules} = componentTree;
 			let sequence = Promise.resolve();
 			// validating components
@@ -316,7 +336,7 @@ export function getComponentTree() {
 				forOwn(modules, (moduleDef, moduleId) => {
 					if (moduleDef.absolutePath) {
 						sequence = sequence.then(() => {
-							let moduleIndexFilePath = path.join(moduleDef.absolutePath, 'index.js');
+							const moduleIndexFilePath = path.join(moduleDef.absolutePath, 'index.js');
 							return getIndexRefs(moduleIndexFilePath, moduleDef)
 								.then(moduleComponentTree => {
 									let moduleSequence = Promise.resolve();
@@ -346,6 +366,28 @@ export function getComponentTree() {
 									}
 									return moduleSequence;
 								})
+								.then(() => {
+									const moduleReducerFilePath = path.join(moduleDef.absolutePath, 'reducer.js');
+									return readFile(moduleReducerFilePath)
+										.then(reducerFileData => {
+											moduleDef.reducerFilePath = moduleReducerFilePath;
+											moduleDef.reducerSourceCode = reducerFileData;
+										})
+										.catch(error => {
+											// do nothing
+										});
+								})
+								.then(() => {
+									const moduleSagasFilePath = path.join(moduleDef.absolutePath, 'sagas.js');
+									return readFile(moduleSagasFilePath)
+										.then(sagasFileData => {
+											moduleDef.sagasFilePath = moduleSagasFilePath;
+											moduleDef.sagasSourceCode = sagasFileData;
+										})
+										.catch(error => {
+											// do nothing
+										});
+								})
 								.catch(error => {
 									console.error('Invalid module structure: ', moduleId);
 									console.error(error);
@@ -359,7 +401,7 @@ export function getComponentTree() {
 				return componentTree;
 			});
 		})
-		.then(componentTree => {
+		.then(() => {
 			return fulfillHtmlComponents()
 				.then(htmlComponents => {
 					componentTree.htmlComponents = htmlComponents;

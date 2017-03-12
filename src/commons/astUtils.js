@@ -117,18 +117,22 @@ export function getNamedExportObject(ast) {
 export function addNamespaceImport(ast, name, path) {
 	ast.body = ast.body || [];
 	if (ast.body.length > 0) {
-		const foundIndex = findIndex(ast.body, item => {
-			const {type, specifiers} = item;
-			if (type === 'ImportDeclaration' && specifiers) {
-				const {type: specifierType, local} = specifiers[0];
-				if (specifierType === 'ImportNamespaceSpecifier' && local) {
-					return local.name === name;
+		let foundIndex = 0;
+		while (foundIndex >= 0) {
+			foundIndex = findIndex(ast.body, item => {
+				const {type, specifiers, source} = item;
+				if (type === 'ImportDeclaration' && specifiers && source) {
+					const {type: specifierType, local} = specifiers[0];
+					const {value} = source;
+					if (specifierType === 'ImportNamespaceSpecifier' && local && value) {
+						return local.name === name || value === path;
+					}
 				}
+				return false;
+			});
+			if (foundIndex >= 0) {
+				ast.body.splice(foundIndex, 1);
 			}
-			return false;
-		});
-		if (foundIndex >= 0) {
-			ast.body.splice(foundIndex, 1);
 		}
 	}
 	let injectIndex = -1;
@@ -161,18 +165,22 @@ export function addNamespaceImport(ast, name, path) {
 export function addDefaultImport(ast, name, path) {
 	ast.body = ast.body || [];
 	if (ast.body.length > 0) {
-		const foundIndex = findIndex(ast.body, item => {
-			const {type, specifiers} = item;
-			if (type === 'ImportDeclaration' && specifiers) {
-				const {type: specifierType, local} = specifiers[0];
-				if (specifierType === 'ImportDefaultSpecifier' && local) {
-					return local.name === name;
+		let foundIndex = 0;
+		while (foundIndex >= 0) {
+			foundIndex = findIndex(ast.body, item => {
+				const {type, specifiers, source} = item;
+				if (type === 'ImportDeclaration' && specifiers && source) {
+					const {type: specifierType, local} = specifiers[0];
+					const {value} = source;
+					if (specifierType === 'ImportDefaultSpecifier' && local && value) {
+						return local.name === name || value === path;
+					}
 				}
+				return false;
+			});
+			if (foundIndex >= 0) {
+				ast.body.splice(foundIndex, 1);
 			}
-			return false;
-		});
-		if (foundIndex >= 0) {
-			ast.body.splice(foundIndex, 1);
 		}
 	}
 	let injectIndex = -1;
@@ -256,4 +264,123 @@ export function addNamedExport(ast, name) {
 		});
 	}
 	return ast;
+}
+
+export function createObjectExpressionNode() {
+	return {
+		type: 'ObjectExpression',
+		properties: []
+	}
+}
+
+export function addPropertyToObjectNode(astNode, propKey, propValue) {
+	if (astNode.type === 'ObjectExpression') {
+		astNode.properties = astNode.properties || [];
+		let newProperty = {
+			type: "Property",
+			key: {
+				type: "Identifier",
+				name: propKey
+			},
+			value: {
+				type: "Identifier",
+				name: propValue
+			},
+			computed: false,
+			kind: "init",
+			method: false,
+			shorthand: false
+		};
+		if (propKey === propValue) {
+			newProperty.shorthand = true;
+		}
+		astNode.properties.push(newProperty);
+	}
+	return astNode;
+}
+
+export function deletePropertyFromObjectNode(astNode, propKey, propValue) {
+	if (astNode.type === 'ObjectExpression') {
+		astNode.properties = astNode.properties || [];
+		let validProps = [];
+		astNode.properties.forEach(prop => {
+			const {type, key, value} = prop;
+			if (type === 'Property' && key && value) {
+				if (key.name !== propKey && value.name !== propValue) {
+					validProps.push(prop);
+				}
+			}
+		});
+		astNode.properties = validProps;
+	}
+	return astNode;
+}
+
+export function findPropertyInObjectNode(astNode, propKey) {
+	let filtered;
+	if (astNode.type === 'ObjectExpression' && astNode.properties) {
+		filtered = astNode.properties.find(prop => {
+			const {type, key, value} = prop;
+			if (type === 'Property' && key && value) {
+				return key.name === propKey;
+			}
+			return false;
+		});
+	}
+	return filtered;
+}
+
+export function addSpreadElementToArrayNode(astNode, name) {
+	if (astNode && astNode.type === 'ArrayExpression') {
+		astNode.elements = astNode.elements || [];
+		astNode.elements.push({
+			type: "SpreadElement",
+			argument: {
+				type: "Identifier",
+				name: name
+			}
+		});
+	}
+	return astNode;
+}
+
+export function deleteSpreadElementFromArrayNode(astNode, name) {
+	if (astNode && astNode.type === 'ArrayExpression') {
+		let validElements = [];
+		const {elements} = astNode;
+		if (elements && elements.length > 0) {
+			elements.forEach(item => {
+				const {type, argument: elementArg} = item;
+				if (type === 'SpreadElement' && elementArg) {
+					if (elementArg.name !== name) {
+						validElements.push(item);
+					}
+				}
+			});
+		}
+		astNode.elements = validElements;
+	}
+	return astNode;
+}
+
+export function findDefaultImport(ast, filePath) {
+	let foundIdentifier = undefined;
+	for (let i = 0; i < ast.body.length; i++) {
+		const {type, source, specifiers} = ast.body[i];
+		if (type === 'ImportDeclaration')
+			if (source && source.value === filePath) {
+				if (specifiers && specifiers.length > 0) {
+					let importDefaultSpecifier =
+						specifiers.find(i =>
+						i.type &&
+						i.type === 'ImportDefaultSpecifier'
+						&& i.local);
+					if (importDefaultSpecifier) {
+						foundIdentifier = importDefaultSpecifier.local.name;
+					}
+				}
+				break;
+			}
+	}
+	return foundIdentifier;
 }

@@ -22,7 +22,7 @@ import {
 } from './scaffoldManager.js';
 
 import {
-	readDefaults,
+	writeComponentDefaults,
 	readComponentDocument,
 	readComponentSourceCode,
 	writeComponentSourceCode,
@@ -42,7 +42,7 @@ export default {
 	installDependencies,
 	saveGenerated,
 	getScaffoldGenerators,
-	readDefaults,
+	writeComponentDefaults,
 	readComponentDocument,
 	readComponentSourceCode,
 	writeComponentSourceCode,

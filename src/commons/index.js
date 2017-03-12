@@ -6,7 +6,14 @@ import {
 	getNamedExportObject,
 	addNamespaceImport,
 	addDefaultImport,
-	addNamedExport
+	addNamedExport,
+	createObjectExpressionNode,
+	addPropertyToObjectNode,
+	deletePropertyFromObjectNode,
+	findPropertyInObjectNode,
+	addSpreadElementToArrayNode,
+	deleteSpreadElementFromArrayNode,
+	findDefaultImport
 } from './astUtils.js';
 
 import {
@@ -71,6 +78,13 @@ export default {
 	addNamespaceImport,
 	addDefaultImport,
 	addNamedExport,
+	createObjectExpressionNode,
+	addPropertyToObjectNode,
+	deletePropertyFromObjectNode,
+	findPropertyInObjectNode,
+	addSpreadElementToArrayNode,
+	deleteSpreadElementFromArrayNode,
+	findDefaultImport,
 	fulex,
 	traverse,
 	traverseWithResult,

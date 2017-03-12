@@ -1,6 +1,18 @@
 import {
-	getReducerProperty
-} from './reducersFileUtils.js';
+	getReducerProperty,
+	injectModuleReducer,
+	injectReducer
+} from './reducerUtils.js';
+
+import {
+	injectModuleSaga,
+	injectSaga
+} from './sagasUtils.js';
+
+import {
+	injectModuleComponent,
+	injectNamespaceComponent
+} from './componentsUtils.js';
 
 import {
 	prepareModelWithImports
@@ -8,5 +20,11 @@ import {
 
 export default {
 	getReducerProperty,
+	injectModuleReducer,
+	injectReducer,
+	injectModuleSaga,
+	injectSaga,
+	injectModuleComponent,
+	injectNamespaceComponent,
 	prepareModelWithImports
 };
