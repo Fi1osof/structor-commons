@@ -16,54 +16,24 @@
 
 import commons from '../commons';
 
-export function getReducerProperty(source, componentGroup, componentName){
-    let ast = commons.parse(source);
-    const sourcePath = `containers/${componentGroup}/${componentName}/reducer.js`;
-    const defaultNode = commons.findDefaultExportNode(ast);
-    let foundProperty = undefined;
-    if(defaultNode) {
-        let foundIndex = -1;
-        let foundIdentifier = undefined;
-        for(let i = 0; i < ast.body.length; i++){
-            const {type, source, specifiers} = ast.body[i];
-            if(type === 'ImportDeclaration'){
-                if(source && source.value === sourcePath){
-                    foundIndex = i;
-                    if(specifiers && specifiers.length > 0) {
-                        let importDefaultSpecifier =
-                            specifiers.find(i =>
-                            i.type &&
-                            i.type === 'ImportDefaultSpecifier'
-                            && i.local);
-                        if(importDefaultSpecifier) {
-                            foundIdentifier = importDefaultSpecifier.local.name;
-                        }
-                    }
-                    break;
-                }
+export function getReducerPropertyName(sourceCode, filePath){
+    let reducerPropertyName;
+    let ast = commons.parse(sourceCode);
+    let defaultNode = commons.findDefaultExportsNode(ast);
+    if (defaultNode) {
+        const importName = commons.findDefaultImport(ast, filePath);
+        if (importName) {
+            reducerPropertyName = commons.findPropertyInObjectNode(defaultNode, importName);
+            if (!reducerPropertyName) {
+                throw Error('There is no a reducer from the module reducer file ' + filePath);
             }
-        }
-        if(foundIndex >= 0 && foundIdentifier) {
-            if(defaultNode.type === 'ObjectExpression'){
-                if(defaultNode.properties){
-                    if(defaultNode.properties.length > 0) {
-                        let foundIndex = -1;
-                        for(let i = 0; i < defaultNode.properties.length; i++){
-                            const {key, value} = defaultNode.properties[i];
-                            if(value && value.name === foundIdentifier){
-                                foundProperty = key.name;
-                            }
-                        }
-                    }
-                }
-            } else {
-                throw Error('The default export in "./structor/app/reducers.js" file is not object.');
-            }
+        } else {
+            throw Error('Could not find import name in global reducers file.')
         }
     } else {
-        throw Error('Could not find default export in "./structor/app/reducers.js" file.');
+        throw Error('Could not find default export in global reducers file.');
     }
-    return foundProperty;
+    return reducerPropertyName;
 }
 
 export function injectModuleReducer(sourceCode, name, importName, filePath) {
@@ -110,7 +80,7 @@ export function injectReducer(sourceCode, name, importName, filePath) {
         commons.addPropertyToObjectNode(defaultNode, name, importName);
         commons.addDefaultImport(ast, importName, filePath);
     } else {
-        throw Error('Could not find default export in reducers file.');
+        throw Error('Could not find default export in global reducers file.');
     }
     return commons.generate(ast);
 }

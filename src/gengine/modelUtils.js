@@ -14,8 +14,80 @@
  * limitations under the License.
  */
 
-import {cloneDeep, forOwn} from 'lodash';
+import {cloneDeep, forOwn, isEmpty} from 'lodash';
 import commons from '../commons';
+
+export const combineAllModuleComponents = (componentTree, namespace) => {
+	let resultModel = {
+		type: "div",
+		props: {},
+		children: []
+	};
+	if (componentTree && componentTree.modules[namespace]) {
+		const {components} = componentTree.modules[namespace];
+		if (components && !isEmpty(components)) {
+			forOwn(components, (value, prop) => {
+				if (value.defaults) {
+					resultModel.children = resultModel.children.concat(value.defaults);
+				} else {
+					resultModel.children.push({
+						type: prop,
+						props: {},
+						children: []
+					});
+				}
+			});
+		}
+	}
+	return resultModel;
+};
+
+export const getModelComponentList = (componentTree, model) => {
+	const modelComponentList = commons.traverseModelWithResult(model, ((node, result) => {
+		let component;
+		if (node.type) {
+			if (node.namespace && node.namespace.length > 0 && componentTree.modules) {
+				let module = componentTree.modules[node.namespace];
+				if (module && module.components) {
+					let componentDef = module.components[node.type];
+					if (componentDef) {
+						component = {
+							name: node.type,
+							namespace: node.namespace,
+							importPath: componentDef.importPath,
+							namespaceImportPath: module.importPath,
+							isLibMember: componentDef.isLibMember,
+						};
+					}
+				}
+			} else {
+				if (componentTree.components) {
+					let componentDef = componentTree.components[node.type];
+					if (componentDef) {
+						component = {
+							name: node.type,
+							importPath: componentDef.importPath,
+							isLibMember: componentDef.isLibMember,
+						}
+					}
+				}
+			}
+		}
+		if (component) {
+			let sameComponents =
+				result.filter(
+					item =>
+					item.name === component.name &&
+					item.namespace === component.namespace
+				);
+			if (!sameComponents || sameComponents.length === 0) {
+				result.push(component);
+			}
+		}
+		return result;
+	}), []);
+	return modelComponentList;
+};
 
 export const prepareModelWithImports = (componentTree, model, srcNamespace) => {
 

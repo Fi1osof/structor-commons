@@ -42,7 +42,7 @@ export function injectSaga(sourceCode, importName, filePath) {
         commons.addSpreadElementToArrayNode(defaultNode, importName);
         commons.addDefaultImport(ast, importName, filePath);
     } else {
-        throw Error('Could not find default export in sagas file.');
+        throw Error('Could not find default export in global sagas file.');
     }
     return commons.generate(ast);
 }

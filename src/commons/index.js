@@ -66,7 +66,8 @@ import {
 	getNpmConfigVariable,
 	setNpmConfigVariable,
 	getPackageAbsolutePath,
-	getPackageVersion
+	getPackageVersion,
+	appendScripts
 } from './npmUtils.js';
 
 export default {
@@ -125,5 +126,6 @@ export default {
 	getNpmConfigVariable,
 	setNpmConfigVariable,
 	getPackageAbsolutePath,
-	getPackageVersion
+	getPackageVersion,
+	appendScripts
 };

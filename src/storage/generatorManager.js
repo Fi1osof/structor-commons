@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import { forOwn, has } from 'lodash';
+import { forOwn, has, isEmpty } from 'lodash';
 import * as config from '../configuration.js';
-import {getComponentTree} from './indexManagerNew.js';
 import {readFile, ensureFilePath, writeFile} from '../commons/fileManager.js';
-import {getPackageAbsolutePath, installPackages} from '../commons/npmUtils.js';
+import {getPackageAbsolutePath, installPackages, appendScripts} from '../commons/npmUtils.js';
 
 export function installDependencies(dependencies) {
+    let installTask = Promise.resolve();
     if (dependencies) {
+        const { packages, scripts } = dependencies;
         // const projectConfig = config.getProjectConfig();
         // if (!has(projectConfig, 'conf.paths.assetsDirPath')) {
         //     return Promise.reject('Wrong project configuration. \'assetsDirPath\' field is missing.');
@@ -29,9 +30,7 @@ export function installDependencies(dependencies) {
         // if (!has(projectConfig, 'conf.files.assetsIndexFilePath')) {
         //     return Promise.reject('Wrong project configuration. \'assetsIndexFilePath\' field is missing.');
         // }
-        const { packages } = dependencies;
         if (packages && packages.length > 0) {
-            let installTask = Promise.resolve();
             let packageNames = '';
             packages.forEach(pkg => {
                 installTask = installTask.then(() => {
@@ -73,10 +72,14 @@ export function installDependencies(dependencies) {
             //     }
             // });
 
-            return installTask;
+        }
+        if (scripts && !isEmpty(scripts)) {
+            installTask = installTask.then(() => {
+                return appendScripts(scripts, config.getProjectDir());
+            });
         }
     }
-    return Promise.resolve();
+    return installTask;
 }
 
 export function saveGenerated(dependencies, files) {

@@ -1,5 +1,5 @@
 import {
-	getReducerProperty,
+	getReducerPropertyName,
 	injectModuleReducer,
 	injectReducer
 } from './reducerUtils.js';
@@ -15,16 +15,20 @@ import {
 } from './componentsUtils.js';
 
 import {
+	combineAllModuleComponents,
+	getModelComponentList,
 	prepareModelWithImports
 } from './modelUtils.js';
 
 export default {
-	getReducerProperty,
+	getReducerPropertyName,
 	injectModuleReducer,
 	injectReducer,
 	injectModuleSaga,
 	injectSaga,
 	injectModuleComponent,
 	injectNamespaceComponent,
+	combineAllModuleComponents,
+	getModelComponentList,
 	prepareModelWithImports
 };

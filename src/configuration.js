@@ -50,6 +50,7 @@ function setupProjectPaths(rootDirPath) {
         gengineDirPath: path.join(absRoot, 'gengine').replace(/\\/g, '/'),
         scaffoldsDirPath: path.join(absRoot, 'gengine', 'scaffolds').replace(/\\/g, '/'),
         applicationGeneratorDirPath: path.join(absRoot, 'gengine', 'application').replace(/\\/g, '/'),
+        sandboxGeneratorDirPath: path.join(absRoot, 'gengine', 'sandbox').replace(/\\/g, '/'),
 
         // templatesDirPath: path.join(absRoot, 'templates').replace(/\\/g, '/'),
         deskSourceDirPath: path.join(absRoot, 'src').replace(/\\/g, '/'),
@@ -287,4 +288,8 @@ export function scaffoldsDirPath() {
 
 export function applicationGeneratorDirPath() {
     return config.project.paths.applicationGeneratorDirPath;
+}
+
+export function sandboxGeneratorDirPath() {
+    return config.project.paths.sandboxGeneratorDirPath;
 }
