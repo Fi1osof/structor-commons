@@ -20,14 +20,6 @@ import {getComponentTree} from './indexManagerNew.js';
 import {readFile, ensureFilePath, writeFile} from '../commons/fileManager.js';
 import {getPackageAbsolutePath, installPackages} from '../commons/npmUtils.js';
 
-export function initGeneratorData(namespace, componentName, model, metadata) {
-    return getComponentTree()
-        .then(index => {
-            let project = config.getProjectConfig();
-            return {namespace, componentName, model, metadata, project, index};
-        });
-}
-
 export function installDependencies(dependencies) {
     if (dependencies) {
         // const projectConfig = config.getProjectConfig();
@@ -91,11 +83,7 @@ export function saveGenerated(dependencies, files) {
     return installDependencies(dependencies)
         .then(() => {
             let fileSavers = [];
-            let componentFilePath;
             files.forEach(fileObject => {
-                if (fileObject.isComponent) {
-                    componentFilePath = fileObject.outputFilePath;
-                }
                 fileSavers.push(
                     ensureFilePath(fileObject.outputFilePath).then(() => {
                         return writeFile(fileObject.outputFilePath, fileObject.sourceCode, false);

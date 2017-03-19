@@ -45,10 +45,11 @@ function setupProjectPaths(rootDirPath) {
         deskReducersFilePath: path.join(absRoot, 'app', 'reducers.js').replace(/\\/g, '/'),
         deskSagasFilePath: path.join(absRoot, 'app', 'sagas.js').replace(/\\/g, '/'),
         componentDefaultsDirPath: path.join(absRoot, 'defaults').replace(/\\/g, '/'),
-        docsComponentsDirPath: path.join(absRoot, 'docs', 'components').replace(/\\/g, '/'),
+        docsComponentsDirPath: path.join(absRoot, 'docs').replace(/\\/g, '/'),
 
         gengineDirPath: path.join(absRoot, 'gengine').replace(/\\/g, '/'),
         scaffoldsDirPath: path.join(absRoot, 'gengine', 'scaffolds').replace(/\\/g, '/'),
+        applicationGeneratorDirPath: path.join(absRoot, 'gengine', 'application').replace(/\\/g, '/'),
 
         // templatesDirPath: path.join(absRoot, 'templates').replace(/\\/g, '/'),
         deskSourceDirPath: path.join(absRoot, 'src').replace(/\\/g, '/'),
@@ -282,4 +283,8 @@ export function gengineDirPath() {
 
 export function scaffoldsDirPath() {
     return config.project.paths.scaffoldsDirPath;
+}
+
+export function applicationGeneratorDirPath() {
+    return config.project.paths.applicationGeneratorDirPath;
 }

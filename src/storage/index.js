@@ -1,18 +1,8 @@
 import {
-	findExportsNode,
-	findImports,
-	getStructure,
-	initIndex,
-	getComponentsNames,
-	addComponent
-} from './indexManager.js';
-
-import {
 	getComponentTree
 } from './indexManagerNew.js';
 
 import {
-	initGeneratorData,
 	installDependencies,
 	saveGenerated
 } from './generatorManager.js';
@@ -31,14 +21,7 @@ import {
 } from './storageManager.js';
 
 export default {
-	findExportsNode,
-	findImports,
-	getStructure,
-	initIndex,
 	getComponentTree,
-	getComponentsNames,
-	addComponent,
-	initGeneratorData,
 	installDependencies,
 	saveGenerated,
 	getScaffoldGenerators,

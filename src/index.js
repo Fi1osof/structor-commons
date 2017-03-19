@@ -14,70 +14,12 @@
  * limitations under the License.
  */
 
-import {
-	SERVICE_DIR,
-	READY,
-	EMPTY,
-	getProjectDir,
-	reinit,
-	init,
-	status,
-	getDebugMode,
-	asObject,
-	appDirPath,
-	webpackConfigFilePath,
-	deskEntryPointFilePath,
-	deskDirPath,
-	deskModelFilePath,
-	deskSourceDirPath,
-	deskIndexFilePath,
-	deskReducersFilePath,
-	deskSagasFilePath,
-	nodeModulesDirPath,
-	componentDefaultsDirPath,
-	docsComponentsDirPath,
-	templatesDirPath,
-	getProjectConfig,
-	projectProxyURL,
-	appAssetsDirPath,
-	gengineDirPath,
-	scaffoldsDirPath
-} from './configuration.js';
-
-export const config = {
-	SERVICE_DIR,
-	READY,
-	EMPTY,
-	getProjectDir,
-	reinit,
-	init,
-	status,
-	getDebugMode,
-	asObject,
-	appDirPath,
-	webpackConfigFilePath,
-	deskEntryPointFilePath,
-	deskDirPath,
-	deskModelFilePath,
-	deskSourceDirPath,
-	deskIndexFilePath,
-	deskReducersFilePath,
-	deskSagasFilePath,
-	nodeModulesDirPath,
-	componentDefaultsDirPath,
-	docsComponentsDirPath,
-	templatesDirPath,
-	getProjectConfig,
-	projectProxyURL,
-	appAssetsDirPath,
-	gengineDirPath,
-	scaffoldsDirPath
-};
-
+import * as configAPI from './configuration.js';
 import commonsAPI from './commons/index';
 import gengineAPI from './gengine/index';
 import storageAPI from './storage/index';
 
+export const config = configAPI;
 export const commons = commonsAPI;
 export const gengine = gengineAPI;
 export const storage = storageAPI;
