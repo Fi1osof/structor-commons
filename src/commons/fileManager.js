@@ -358,30 +358,37 @@ export function readDirectoryFlat(dirPath){
                     if (total === 0) {
                         resolve(found);
                     }
+                    let tasks = [];
                     for (let x = 0, l = files.length; x < l; x++) {
                         let absPath = path.join(dirPath, files[x]).replace(/\\/g, '/');
-                        fs.stat(absPath, ((_path, _name, _x) => {
-                            return (err, stat) => {
-                                if (err) {
-                                    reject(err);
-                                }
-                                if (stat.isDirectory()) {
-                                    found.dirs.push({
-                                        name: _name,
-                                        path: _path
-                                    });
-                                } else {
-                                    found.files.push({
-                                        name: _name,
-                                        path: _path
-                                    });
-                                }
-                                if(_x === total - 1){
-                                    resolve(found);
-                                }
-                            }
-                        })(absPath, files[x], x));
+                        let fileName = files[x];
+                        tasks.push(
+                            new Promise((processed, failed) => {
+                                fs.stat(absPath, (err, stat) => {
+                                    if (err) {
+                                        failed(err);
+                                    }
+                                    if (stat.isDirectory()) {
+                                        found.dirs.push({
+                                            name: fileName,
+                                            path: absPath
+                                        });
+                                    } else {
+                                        found.files.push({
+                                            name: fileName,
+                                            path: absPath
+                                        });
+                                    }
+                                    console.log('Processed: ', absPath, fileName, x, files.length);
+                                    processed(found);
+                                });
+                            })
+                        );
                     }
+                    return Promise.all(tasks).then(() => {
+                        console.log('Finished');
+                        resolve(found);
+                    });
                 });
             } else {
                 reject("path: " + dirPath + " is not a directory");
