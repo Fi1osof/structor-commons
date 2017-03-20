@@ -342,7 +342,6 @@ export function readDirectoryFiles(dirPath, testFileNames = undefined){
 }
 
 export function readDirectoryFlat(dirPath){
-
     return new Promise( (resolve, reject) => {
         fs.lstat(dirPath, (err, stat) => {
             if (err) {
@@ -394,7 +393,6 @@ export function readDirectoryFlat(dirPath){
 
         });
     });
-
 }
 
 export function checkDirIsEmpty(dirPath){
