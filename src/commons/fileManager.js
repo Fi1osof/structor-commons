@@ -379,14 +379,12 @@ export function readDirectoryFlat(dirPath){
                                             path: absPath
                                         });
                                     }
-                                    console.log('Processed: ', absPath, fileName, x, files.length);
                                     processed(found);
                                 });
                             })
                         );
                     }
                     return Promise.all(tasks).then(() => {
-                        console.log('Finished');
                         resolve(found);
                     });
                 });
