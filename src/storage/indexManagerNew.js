@@ -58,6 +58,7 @@ componentsTree = {
 			indexFilePath,
 			indexSourceCode,
 	        reducerFilePath,
+	        reducerImportPath,
 		    reducerSourceCode,
 		    sagasFilePath,
 		    sagasSourceCode,
@@ -206,6 +207,9 @@ function fulfillComponentDef(componentDef, moduleDef = {}) {
 			if (!defaults || defaults.length <= 0) {
 				throw Error('Defaults not found');
 			} else {
+				defaults.forEach(item => {
+					item.variant = item.variant || 'default';
+				});
 				result.defaults = defaults;
 			}
 		})
@@ -371,6 +375,7 @@ export function getComponentTree() {
 									return readFile(moduleReducerFilePath)
 										.then(reducerFileData => {
 											moduleDef.reducerFilePath = moduleReducerFilePath;
+											moduleDef.reducerImportPath = path.join(moduleDef.importPath, 'reducer.js')
 											moduleDef.reducerSourceCode = reducerFileData;
 										})
 										.catch(error => {

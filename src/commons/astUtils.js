@@ -330,6 +330,20 @@ export function findPropertyInObjectNode(astNode, propKey) {
 	return filtered;
 }
 
+export function findPropertyByValueInObjectNode(astNode, propValue) {
+	let filtered;
+	if (astNode.type === 'ObjectExpression' && astNode.properties) {
+		filtered = astNode.properties.find(prop => {
+			const {type, key, value} = prop;
+			if (type === 'Property' && key && value) {
+				return value.name === propValue;
+			}
+			return false;
+		});
+	}
+	return filtered;
+}
+
 export function addSpreadElementToArrayNode(astNode, name) {
 	if (astNode && astNode.type === 'ArrayExpression') {
 		astNode.elements = astNode.elements || [];

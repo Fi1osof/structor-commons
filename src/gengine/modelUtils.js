@@ -42,6 +42,21 @@ export const combineAllModuleComponents = (componentTree, namespace) => {
 	return resultModel;
 };
 
+export const combineAllModulesComponents = (componentTree, namespaces) => {
+	let resultModel = {
+		type: "div",
+		props: {},
+		children: []
+	};
+	if (namespaces && namespaces.length > 0) {
+		namespaces.forEach(namespace => {
+			let namespaceModel = combineAllModuleComponents(componentTree, namespace);
+			resultModel.children = resultModel.children.concat(namespaceModel.children);
+		});
+	}
+	return resultModel;
+};
+
 export const getModelComponentList = (componentTree, model) => {
 	const modelComponentList = commons.traverseModelWithResult(model, ((node, result) => {
 		let component;
@@ -142,7 +157,11 @@ export const prepareModelWithImports = (componentTree, model, srcNamespace) => {
 				if (foundComponents.length === 1) {
 					// there is only one component in model with such a name
 					let componentDef = foundComponents[0];
-					if (componentDef.namespace && componentDef.namespace === srcNamespace) {
+					if (componentDef.namespace
+						&& srcNamespace
+						&& componentDef.namespace === srcNamespace) {
+						// this component is from the same namespace
+						// and should be included as an individual component
 						result[componentDef.name] = {
 							relativeSource: componentDef.importPath,
 						};
@@ -183,6 +202,16 @@ export const prepareModelWithImports = (componentTree, model, srcNamespace) => {
 		if (node.type) {
 			let foundImport = imports[node.type];
 			if (foundImport) {
+				if (node.namespace && node.namespace.length > 0) {
+					let namespaceImport = imports[node.namespace];
+					if (namespaceImport) {
+						let foundComponents = modelComponentList.filter(item => item.name === node.type);
+						if (foundComponents && foundComponents.length > 1) {
+							node.type = `${node.namespace}.${node.type}`;
+						}
+					}
+				}
+			} else {
 				if (node.namespace && node.namespace.length > 0) {
 					let namespaceImport = imports[node.namespace];
 					if (namespaceImport) {

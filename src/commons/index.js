@@ -11,6 +11,7 @@ import {
 	addPropertyToObjectNode,
 	deletePropertyFromObjectNode,
 	findPropertyInObjectNode,
+	findPropertyByValueInObjectNode,
 	addSpreadElementToArrayNode,
 	deleteSpreadElementFromArrayNode,
 	findDefaultImport
@@ -83,6 +84,7 @@ export default {
 	addPropertyToObjectNode,
 	deletePropertyFromObjectNode,
 	findPropertyInObjectNode,
+	findPropertyByValueInObjectNode,
 	addSpreadElementToArrayNode,
 	deleteSpreadElementFromArrayNode,
 	findDefaultImport,

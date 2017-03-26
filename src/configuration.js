@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 import path from 'path';
-import {forOwn, get, set, cloneDeep} from 'lodash';
+import {forOwn, get, set, cloneDeep, findIndex} from 'lodash';
 import {isExisting, checkDirIsEmpty, readFile, writeFile} from './commons/fileManager.js';
 import {parse, generate} from './commons/utils.js';
 
 export const SERVICE_DIR = '.structor';
+export const SANDBOX_DIR = '.structor-sandbox';
 export const READY = 'ready-to-go';
 export const EMPTY = 'dir-is-empty';
 
@@ -34,6 +35,10 @@ let config = {
         packageConf: {}
     }
 };
+
+const tempDirs = [
+    SANDBOX_DIR
+];
 
 function setupProjectPaths(rootDirPath) {
     const absRoot = path.join(rootDirPath, SERVICE_DIR).replace(/\\/g, '/');
@@ -52,6 +57,8 @@ function setupProjectPaths(rootDirPath) {
         applicationGeneratorDirPath: path.join(absRoot, 'gengine', 'application').replace(/\\/g, '/'),
         sandboxGeneratorDirPath: path.join(absRoot, 'gengine', 'sandbox').replace(/\\/g, '/'),
 
+        sandboxDirPath: path.join(rootDirPath, SANDBOX_DIR),
+
         // templatesDirPath: path.join(absRoot, 'templates').replace(/\\/g, '/'),
         deskSourceDirPath: path.join(absRoot, 'src').replace(/\\/g, '/'),
         deskPageFilePath: path.join(absRoot, 'src', 'PageForDesk.js').replace(/\\/g, '/'),
@@ -66,17 +73,22 @@ function setupProjectPaths(rootDirPath) {
 
 function checkPaths(confObj) {
     let sequence = Promise.resolve([]);
+    let foundIndex = -1;
     forOwn(confObj, (value, prop) => {
-        sequence = sequence.then(errors => {
-            return isExisting(value)
-                .then(() => {
-                    return errors;
-                })
-                .catch(error => {
-                    errors.push(error);
-                    return errors;
-                })
-        });
+        // exclude temp dirs from checking they exist
+        foundIndex = findIndex(tempDirs, item => value.indexOf(item) >= 0);
+        if (foundIndex < 0) {
+			sequence = sequence.then(errors => {
+				return isExisting(value)
+					.then(() => {
+						return errors;
+					})
+					.catch(error => {
+						errors.push(error);
+						return errors;
+					})
+			});
+        }
     });
     return sequence;
 }
@@ -292,4 +304,8 @@ export function applicationGeneratorDirPath() {
 
 export function sandboxGeneratorDirPath() {
     return config.project.paths.sandboxGeneratorDirPath;
+}
+
+export function sandboxDirPath() {
+    return config.project.paths.sandboxDirPath;
 }

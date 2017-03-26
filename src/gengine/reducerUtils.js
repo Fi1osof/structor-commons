@@ -23,12 +23,19 @@ export function getReducerPropertyName(sourceCode, filePath){
     if (defaultNode) {
         const importName = commons.findDefaultImport(ast, filePath);
         if (importName) {
-            reducerPropertyName = commons.findPropertyInObjectNode(defaultNode, importName);
-            if (!reducerPropertyName) {
-                throw Error('There is no a reducer from the module reducer file ' + filePath);
+            let attempt1 = commons.findPropertyInObjectNode(defaultNode, importName);
+            let attempt2 = commons.findPropertyByValueInObjectNode(defaultNode, importName);
+            if (!attempt1 && !attempt2) {
+                throw Error('There is no a reducer imported from the module reducer file ' + filePath);
+            } else {
+                if (attempt1 && attempt1.key) {
+                    reducerPropertyName = attempt1.key.name;
+                } else if (attempt2 && attempt2.key) {
+					reducerPropertyName = attempt2.key.name;
+                }
             }
         } else {
-            throw Error('Could not find import name in global reducers file.')
+            throw Error(`Could not find import from ${filePath} in global reducers file.`);
         }
     } else {
         throw Error('Could not find default export in global reducers file.');
@@ -70,15 +77,25 @@ export function injectReducer(sourceCode, name, importName, filePath) {
     let ast = commons.parse(sourceCode);
     let defaultNode = commons.findDefaultExportsNode(ast);
     if (defaultNode) {
-        let existing = commons.findPropertyInObjectNode(defaultNode, name);
-        if (existing) {
-            throw Error('There is already a reducer with name ' + name + ' in reducer file');
-        }
-        const deleteImportName = commons.findDefaultImport(ast, filePath);
-        commons.deletePropertyFromObjectNode(defaultNode, name, deleteImportName);
-        commons.deletePropertyFromObjectNode(defaultNode, name, importName);
-        commons.addPropertyToObjectNode(defaultNode, name, importName);
-        commons.addDefaultImport(ast, importName, filePath);
+		const importName = commons.findDefaultImport(ast, filePath);
+		if (importName) {
+			let attempt1 = commons.findPropertyInObjectNode(defaultNode, importName);
+			let attempt2 = commons.findPropertyByValueInObjectNode(defaultNode, importName);
+			if (!attempt1 && !attempt2) {
+				commons.addPropertyToObjectNode(defaultNode, name, importName);
+				commons.addDefaultImport(ast, importName, filePath);
+			}
+		} else {
+			commons.addPropertyToObjectNode(defaultNode, name, importName);
+			commons.addDefaultImport(ast, importName, filePath);
+		}
+        // if (!existing) {
+			// const deleteImportName = commons.findDefaultImport(ast, filePath);
+			// commons.deletePropertyFromObjectNode(defaultNode, name, deleteImportName);
+			// commons.deletePropertyFromObjectNode(defaultNode, name, importName);
+			// commons.addPropertyToObjectNode(defaultNode, name, importName);
+			// commons.addDefaultImport(ast, importName, filePath);
+        // }
     } else {
         throw Error('Could not find default export in global reducers file.');
     }

@@ -17,8 +17,13 @@ import {
 import {
 	combineAllModuleComponents,
 	getModelComponentList,
-	prepareModelWithImports
+	prepareModelWithImports,
+	combineAllModulesComponents
 } from './modelUtils.js';
+
+import {
+	getModulesImports
+} from './sourceCodeUtils.js';
 
 export default {
 	getReducerPropertyName,
@@ -30,5 +35,7 @@ export default {
 	injectNamespaceComponent,
 	combineAllModuleComponents,
 	getModelComponentList,
-	prepareModelWithImports
+	prepareModelWithImports,
+	combineAllModulesComponents,
+	getModulesImports,
 };
