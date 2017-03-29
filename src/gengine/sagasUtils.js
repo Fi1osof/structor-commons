@@ -36,7 +36,6 @@ export function injectSaga(sourceCode, importName, filePath) {
     let defaultNode = commons.findDefaultExportsNode(ast);
     if (defaultNode) {
         const deleteImportName = commons.findDefaultImport(ast, filePath);
-        console.log('Found delete import: ', deleteImportName);
         commons.deleteSpreadElementFromArrayNode(defaultNode, deleteImportName);
         commons.deleteSpreadElementFromArrayNode(defaultNode, importName);
         commons.addSpreadElementToArrayNode(defaultNode, importName);

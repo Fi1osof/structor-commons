@@ -77,10 +77,10 @@ export function injectReducer(sourceCode, name, importName, filePath) {
     let ast = commons.parse(sourceCode);
     let defaultNode = commons.findDefaultExportsNode(ast);
     if (defaultNode) {
-		const importName = commons.findDefaultImport(ast, filePath);
-		if (importName) {
-			let attempt1 = commons.findPropertyInObjectNode(defaultNode, importName);
-			let attempt2 = commons.findPropertyByValueInObjectNode(defaultNode, importName);
+		const foundImportName = commons.findDefaultImport(ast, filePath);
+		if (foundImportName) {
+			let attempt1 = commons.findPropertyInObjectNode(defaultNode, foundImportName);
+			let attempt2 = commons.findPropertyByValueInObjectNode(defaultNode, foundImportName);
 			if (!attempt1 && !attempt2) {
 				commons.addPropertyToObjectNode(defaultNode, name, importName);
 				commons.addDefaultImport(ast, importName, filePath);
