@@ -458,8 +458,9 @@ export function unpackTarGz(srcFilePath, destDirPath){
     return new Promise( (resolve, reject) => {
         fs.createReadStream(srcFilePath)
             .pipe(zlib.createGunzip())
+			.on('error', err => { reject(err); })
             .pipe(tar.extract(destDirPath, { dmode: '0666', fmode: '0666' })
-                .on('finish', () => { resolve(); }))
+            .on('finish', () => { resolve(); }))
             .on('error', err => { reject(err); });
     });
 }
@@ -468,7 +469,7 @@ export function unpackTar(srcFilePath, destDirPath){
     return new Promise( (resolve, reject) => {
         fs.createReadStream(srcFilePath)
             .pipe(tar.extract(destDirPath, { dmode: '0666', fmode: '0666' })
-                .on('finish', () => { resolve(); }))
+            .on('finish', () => { resolve(); }))
             .on('error', err => { reject(err); });
     });
 }
