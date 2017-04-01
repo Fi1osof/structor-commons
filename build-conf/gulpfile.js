@@ -32,6 +32,6 @@ gulp.task('build-dev-meta', ['clean-dev-meta'], function() {
 gulp.task('build', ['clean'], function() {
     return gulp.src('../src/**/*.js')
         .pipe(babel())
-        // .pipe(uglify())
+        .pipe(uglify())
         .pipe(gulp.dest('../distr'));
 });
