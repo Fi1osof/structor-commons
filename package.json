@@ -1,7 +1,7 @@
 {
   "name": "structor-commons",
   "version": "0.0.1",
-  "description": "Structor Commons",
+  "description": "Structor Common API",
   "main": "distr/index.js",
   "scripts": {
     "build-dev-meta": "gulp --gulpfile ./build-conf/gulpfile.js build-dev-meta",
