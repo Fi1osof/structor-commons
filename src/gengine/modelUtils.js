@@ -164,6 +164,7 @@ export const prepareModelWithImports = (componentTree, model, srcNamespace) => {
 						// and should be included as an individual component
 						result[componentDef.name] = {
 							relativeSource: componentDef.importPath,
+              member: componentDef.isLibMember,
 						};
 					} else if (componentDef.namespace && componentDef.namespace.length > 0) {
 						result[componentDef.name] = {
