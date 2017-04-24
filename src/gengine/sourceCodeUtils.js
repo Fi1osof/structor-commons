@@ -14,38 +14,41 @@
  * limitations under the License.
  */
 
+import path from 'path';
 import commons from '../commons';
 
-export function getModulesImports(componentTree, namespaces) {
-    let importObjects = [];
-	let tasks = [];
-	let moduleDef;
-	namespaces.forEach(namespace => {
-		moduleDef = componentTree.modules[namespace];
-		if (moduleDef) {
-			tasks.push(
-				commons.readDirectoryFiles(moduleDef.absolutePath)
-					.then(found => {
-						if (found.files && found.files.length > 0) {
-							return found.files.reduce(
-								(sequence, filePath) => {
-									return sequence
-										.then(() => {
-											return commons.readFile(filePath)
-												.then(fileData => {
-													let ast = commons.parse(fileData);
-													importObjects.push(commons.getImportsObject(ast));
-												});
-										}).catch(err => {
-											console.error(err.message + '. File path: ' + filePath);
-										});
-								},
-								Promise.resolve()
-							);
-						}
-					})
-			)
-		}
-	});
-	return Promise.all(tasks).then(() => {return importObjects;});
+export function getModulesImports (componentTree, namespaces) {
+  let importObjects = [];
+  let tasks = [];
+  let moduleDef;
+  namespaces.forEach(namespace => {
+    moduleDef = componentTree.modules[namespace];
+    if (moduleDef) {
+      tasks.push(
+        commons.readDirectoryFiles(moduleDef.absolutePath)
+          .then(found => {
+            if (found.files && found.files.length > 0) {
+              return found.files.reduce(
+                (sequence, filePath) => {
+                  return sequence
+                    .then(() => {
+                      if (path.extname(filePath) === '.js' || path.extname(filePath) === '.jsx') {
+                        return commons.readFile(filePath)
+                          .then(fileData => {
+                            let ast = commons.parse(fileData);
+                            importObjects.push(commons.getImportsObject(ast));
+                          });
+                      }
+                    }).catch(err => {
+                      console.error(err.message + '. File path: ' + filePath);
+                    });
+                },
+                Promise.resolve()
+              );
+            }
+          })
+      );
+    }
+  });
+  return Promise.all(tasks).then(() => {return importObjects;});
 }
