@@ -16,8 +16,7 @@
 
 import _ from 'lodash';
 import path from 'path';
-import esformatter from 'esformatter';
-import esformatterOptions from './esformatterUtils.js';
+import prettier from 'prettier';
 import esprima from 'esprima';
 import escodegen from 'escodegen';
 
@@ -118,7 +117,7 @@ export function generate(ast){
 
 export function formatJs(jsData) {
     try {
-        return esformatter.format(jsData, esformatterOptions);
+        return prettier.format(jsData);
     } catch (e) {
         console.error(e);
         throw Error(e.message);

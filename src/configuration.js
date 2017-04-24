@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import path from 'path'
-import { forOwn, get, set, cloneDeep, findIndex } from 'lodash'
-import { isExisting, checkDirIsEmpty, readFile, writeFile, readJson } from './commons/fileManager.js'
-import { parse, generate } from './commons/utils.js'
+import path from 'path';
+import { forOwn, get, set, cloneDeep, findIndex } from 'lodash';
+import { isExisting, checkDirIsEmpty, readFile, writeFile, readJson } from './commons/fileManager.js';
+import { parse, generate } from './commons/utils.js';
 
-export const SERVICE_DIR = '.structor'
-export const SANDBOX_DIR = '.structor-sandbox'
-export const READY = 'ready-to-go'
-export const EMPTY = 'dir-is-empty'
+export const SERVICE_DIR = '.structor';
+export const SANDBOX_DIR = '.structor-sandbox';
+export const READY = 'ready-to-go';
+export const EMPTY = 'dir-is-empty';
 
 let config = {
   status: undefined,
@@ -34,14 +34,14 @@ let config = {
     paths: {},
     packageConf: {}
   }
-}
+};
 
 const tempDirs = [
   SANDBOX_DIR
-]
+];
 
 function setupProjectPaths (rootDirPath) {
-  const absRoot = path.join(rootDirPath, SERVICE_DIR).replace(/\\/g, '/')
+  const absRoot = path.join(rootDirPath, SERVICE_DIR).replace(/\\/g, '/');
   config.project.paths = {
     dir: rootDirPath,
     configFilePath: path.join(absRoot, 'config.js').replace(/\\/g, '/'),
@@ -68,51 +68,51 @@ function setupProjectPaths (rootDirPath) {
     nodeModulesDirPath: path.join(rootDirPath, 'node_modules').replace(/\\/g, '/'),
     deskModelFilePath: path.join(absRoot, 'desk', 'model.json').replace(/\\/g, '/'),
     deskDirPath: path.join(absRoot, 'desk').replace(/\\/g, '/')
-  }
+  };
 }
 
 function checkPaths (confObj) {
-  let sequence = Promise.resolve([])
-  let foundIndex = -1
+  let sequence = Promise.resolve([]);
+  let foundIndex = -1;
   forOwn(confObj, (value, prop) => {
     // exclude temp dirs from checking they exist
-    foundIndex = findIndex(tempDirs, item => value.indexOf(item) >= 0)
+    foundIndex = findIndex(tempDirs, item => value.indexOf(item) >= 0);
     if (foundIndex < 0) {
       sequence = sequence.then(errors => {
         return isExisting(value)
           .then(() => {
-            return errors
+            return errors;
           })
           .catch(error => {
-            errors.push(error)
-            return errors
-          })
-      })
+            errors.push(error);
+            return errors;
+          });
+      });
     }
-  })
-  return sequence
+  });
+  return sequence;
 }
 
 function checkProjectDir () {
-  return checkPaths(config.project.paths)
+  return checkPaths(config.project.paths);
 }
 
 function loadProjectConfig () {
-  const {configFilePath, dir} = config.project.paths
-  let configFileData = require(configFilePath)
-  config.project.conf = Object.assign({}, configFileData)
+  const {configFilePath, dir} = config.project.paths;
+  let configFileData = require(configFilePath);
+  config.project.conf = Object.assign({}, configFileData);
   if (configFileData.srcPath && dir) {
-    config.project.paths.appDirPath = path.join(dir, configFileData.srcPath).replace(/\\/g, '/')
-    config.project.paths.appAssetsDirPath = path.join(dir, configFileData.srcPath, 'assets').replace(/\\/g, '/')
+    config.project.paths.appDirPath = path.join(dir, configFileData.srcPath).replace(/\\/g, '/');
+    config.project.paths.appAssetsDirPath = path.join(dir, configFileData.srcPath, 'assets').replace(/\\/g, '/');
   } else {
-    throw Error('"srcPath" field is missing in Structor config object.')
+    throw Error('"srcPath" field is missing in Structor config object.');
   }
 }
 
 function changePropertyValue (ast, prop, value) {
-  const body = ast.body
+  const body = ast.body;
   if (body && body.length > 0) {
-    let moduleExports
+    let moduleExports;
     body.forEach(item => {
       if (item.type === 'ExpressionStatement'
         && item.expression
@@ -120,22 +120,22 @@ function changePropertyValue (ast, prop, value) {
         && item.expression.left
         && item.expression.right
         && item.expression.right.type === 'ObjectExpression') {
-        const {type, object, property} = item.expression.left
+        const {type, object, property} = item.expression.left;
         if (type === 'MemberExpression' && object && property) {
           if (object.name === 'module' && property.name === 'exports') {
-            moduleExports = item.expression.right.properties
+            moduleExports = item.expression.right.properties;
           }
         }
       }
-    })
+    });
     if (moduleExports) {
-      let property
+      let property;
       if (moduleExports.length > 0) {
-        property = moduleExports.find(p => p.key && p.key.name === prop)
+        property = moduleExports.find(p => p.key && p.key.name === prop);
       }
       if (property && property.value) {
-        property.value.value = value
-        property.value.row = '"' + value + '"'
+        property.value.value = value;
+        property.value.row = '"' + value + '"';
       } else {
         property = {
           type: 'Property',
@@ -152,8 +152,8 @@ function changePropertyValue (ast, prop, value) {
           kind: 'init',
           method: false,
           shorthand: false,
-        }
-        moduleExports.push(property)
+        };
+        moduleExports.push(property);
       }
     }
   }
@@ -162,40 +162,40 @@ function changePropertyValue (ast, prop, value) {
 function rewriteProjectConfigOption (optionPath, optionValue) {
   return readFile(config.project.paths.configFilePath)
     .then(fileData => {
-      set(config.project.conf, optionPath, optionValue)
-      let ast = parse(fileData)
-      changePropertyValue(ast, optionPath, optionValue)
-      return writeFile(config.project.paths.configFilePath, generate(ast))
-    })
+      set(config.project.conf, optionPath, optionValue);
+      let ast = parse(fileData);
+      changePropertyValue(ast, optionPath, optionValue);
+      return writeFile(config.project.paths.configFilePath, generate(ast));
+    });
 }
 
 function setProjectDir (value) {
-  setupProjectPaths(value)
+  setupProjectPaths(value);
 }
 
 export function reinit () {
-  const projectDirPath = getProjectDir()
-  return init(projectDirPath)
+  const projectDirPath = getProjectDir();
+  return init(projectDirPath);
 }
 
 export function init (projectDirPath, serverDirPath, debugMode) {
-  config.status = undefined
-  config.debugMode = debugMode
+  config.status = undefined;
+  config.debugMode = debugMode;
   return checkDirIsEmpty(projectDirPath)
     .then(() => {
-      config.status = EMPTY
-      return EMPTY
+      config.status = EMPTY;
+      return EMPTY;
     })
     .catch(e => {
-      setProjectDir(projectDirPath)
+      setProjectDir(projectDirPath);
       return checkProjectDir()
         .then(errors => {
           if (errors.length > 0) {
-            let messages = ''
+            let messages = '';
             errors.forEach(error => {
-              messages += error + '\n'
-            })
-            throw Error(messages)
+              messages += error + '\n';
+            });
+            throw Error(messages);
           }
         })
         .then(() => {
@@ -203,116 +203,116 @@ export function init (projectDirPath, serverDirPath, debugMode) {
           return readJson(packageFilePath)
             .then(packageConfig => {
               config.server.packageConf.version = packageConfig.version;
-            })
+            });
         })
         .then(() => {
-          loadProjectConfig()
-          config.status = READY
-          return READY
-        })
-    })
+          loadProjectConfig();
+          config.status = READY;
+          return READY;
+        });
+    });
 }
 
 export function getProjectDir () {
-  return config.project.paths.dir
+  return config.project.paths.dir;
 }
 
 export function status () {
-  return config.status
+  return config.status;
 }
 
 export function getDebugMode () {
-  return config.debugMode
+  return config.debugMode;
 }
 
 export function asObject () {
-  return cloneDeep(config)
+  return cloneDeep(config);
 }
 
 export function appDirPath () {
-  return config.project.paths.appDirPath
+  return config.project.paths.appDirPath;
 }
 
 export function webpackConfigFilePath () {
-  return config.project.paths.webpackConfigFilePath
+  return config.project.paths.webpackConfigFilePath;
 }
 
 export function deskEntryPointFilePath () {
-  return config.project.paths.deskEntryPointFilePath
+  return config.project.paths.deskEntryPointFilePath;
 }
 
 export function deskDirPath () {
-  return config.project.paths.deskDirPath
+  return config.project.paths.deskDirPath;
 }
 
 export function deskModelFilePath () {
-  return config.project.paths.deskModelFilePath
+  return config.project.paths.deskModelFilePath;
 }
 
 export function deskSourceDirPath () {
-  return config.project.paths.deskSourceDirPath
+  return config.project.paths.deskSourceDirPath;
 }
 
 export function deskIndexFilePath () {
-  return config.project.paths.deskIndexFilePath
+  return config.project.paths.deskIndexFilePath;
 }
 
 export function deskReducersFilePath () {
-  return config.project.paths.deskReducersFilePath
+  return config.project.paths.deskReducersFilePath;
 }
 
 export function deskSagasFilePath () {
-  return config.project.paths.deskSagasFilePath
+  return config.project.paths.deskSagasFilePath;
 }
 
 export function nodeModulesDirPath () {
-  return config.project.paths.nodeModulesDirPath
+  return config.project.paths.nodeModulesDirPath;
 }
 
 export function componentDefaultsDirPath () {
-  return config.project.paths.componentDefaultsDirPath
+  return config.project.paths.componentDefaultsDirPath;
 }
 
 export function docsComponentsDirPath () {
-  return config.project.paths.docsComponentsDirPath
+  return config.project.paths.docsComponentsDirPath;
 }
 
 export function templatesDirPath () {
-  return config.project.paths.templatesDirPath
+  return config.project.paths.templatesDirPath;
 }
 
 export function getProjectConfig () {
-  return cloneDeep(config.project)
+  return cloneDeep(config.project);
 }
 
 export function projectProxyURL (value) {
   if (arguments.length > 0) {
-    rewriteProjectConfigOption('proxyURL', value)
+    rewriteProjectConfigOption('proxyURL', value);
   } else {
-    return config.project.conf.proxyURL
+    return config.project.conf.proxyURL;
   }
 }
 
 export function appAssetsDirPath () {
-  return config.project.paths.appAssetsDirPath
+  return config.project.paths.appAssetsDirPath;
 }
 
 export function gengineDirPath () {
-  return config.project.paths.gengineDirPath
+  return config.project.paths.gengineDirPath;
 }
 
 export function scaffoldsDirPath () {
-  return config.project.paths.scaffoldsDirPath
+  return config.project.paths.scaffoldsDirPath;
 }
 
 export function applicationGeneratorDirPath () {
-  return config.project.paths.applicationGeneratorDirPath
+  return config.project.paths.applicationGeneratorDirPath;
 }
 
 export function sandboxGeneratorDirPath () {
-  return config.project.paths.sandboxGeneratorDirPath
+  return config.project.paths.sandboxGeneratorDirPath;
 }
 
 export function sandboxDirPath () {
-  return config.project.paths.sandboxDirPath
+  return config.project.paths.sandboxDirPath;
 }
