@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {cloneDeep, forOwn, isEmpty} from 'lodash';
+import {cloneDeep, forOwn, isEmpty, isObject, isArray} from 'lodash';
 import commons from '../commons';
 
 export const combineAllModuleComponents = (componentTree, namespace) => {
@@ -233,3 +233,49 @@ export const prepareModelWithImports = (componentTree, model, srcNamespace) => {
 
 	return {imports: resultImports, model: resultModel};
 };
+
+export const prepareModelWithObjects = function (model) {
+  let newModel = cloneDeep(model);
+  const foundObjects = commons.traverseModelWithResult(newModel, ((node, result) => {
+    let component;
+    if (node.type && node.props && !isEmpty(node.props)) {
+
+      let {props} = node;
+      let newPropName;
+      forOwn(props, (value, prop) => {
+        const existing = result.filter(i => i.propName === prop);
+        if (existing && existing.length > 0) {
+          newPropName = '' + prop + existing.length;
+        } else {
+          newPropName = '' + prop;
+        }
+        if (isArray(value)) {
+          result.push({
+            propName: prop,
+            newPropName,
+            objectValue: value,
+            isArray: true,
+          });
+          props[prop] = {
+            propName: prop,
+            newPropName,
+          };
+        } else if (isObject(value) && !value['type']) {
+          result.push({
+            propName: prop,
+            newPropName,
+            objectValue: value,
+            isObject: true,
+          });
+          props[prop] = {
+            propName: prop,
+            newPropName,
+          };
+        }
+      });
+    }
+    return result;
+  }), []);
+  return {foundObjects, model: newModel};
+};
+

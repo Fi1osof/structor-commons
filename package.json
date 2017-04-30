@@ -1,6 +1,6 @@
 {
   "name": "structor-commons",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Structor Common API",
   "main": "distr/index.js",
   "scripts": {

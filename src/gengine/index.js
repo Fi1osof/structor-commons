@@ -18,6 +18,7 @@ import {
 	combineAllModuleComponents,
 	getModelComponentList,
 	prepareModelWithImports,
+  prepareModelWithObjects,
 	combineAllModulesComponents
 } from './modelUtils.js';
 
@@ -36,6 +37,7 @@ export default {
 	combineAllModuleComponents,
 	getModelComponentList,
 	prepareModelWithImports,
+  prepareModelWithObjects,
 	combineAllModulesComponents,
 	getModulesImports,
 };
