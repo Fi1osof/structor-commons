@@ -33,15 +33,8 @@ export function installDependencies(dependencies) {
         if (packages && packages.length > 0) {
             let packageNames = '';
             packages.forEach(pkg => {
-                installTask = installTask.then(() => {
-                    return getPackageAbsolutePath(pkg.name, config.getProjectDir())
-                        .then(packagePath => {
-                            if (!packagePath) {
-                                const version = pkg.version && pkg.version.trim().length > 0 ? '@' + pkg.version.trim() : '';
-                                packageNames += pkg.name + version + ' ';
-                            }
-                        });
-                })
+              const version = pkg.version && pkg.version.trim().length > 0 ? '@' + pkg.version.trim() : '';
+              packageNames += pkg.name + version + ' ';
             });
             installTask = installTask.then(() => {
                 packageNames = packageNames.substr(0, packageNames.length - 1);
