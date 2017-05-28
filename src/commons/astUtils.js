@@ -398,3 +398,21 @@ export function findDefaultImport(ast, filePath) {
 	}
 	return foundIdentifier;
 }
+
+export function getObjectAssignmentPropNames (ast) {
+  let resultList = [];
+  traverse(ast, node => {
+    if (node.type === 'AssignmentExpression' && node.right && node.right.type === 'ObjectExpression') {
+      const {properties} = node.right;
+      if (properties && properties.length > 0) {
+        properties.forEach(item => {
+        	const {key} = item;
+        	if (key) {
+        		resultList.push(key.name);
+					}
+        });
+			}
+    }
+  });
+  return resultList;
+}

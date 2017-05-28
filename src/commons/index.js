@@ -14,7 +14,8 @@ import {
 	findPropertyByValueInObjectNode,
 	addSpreadElementToArrayNode,
 	deleteSpreadElementFromArrayNode,
-	findDefaultImport
+	findDefaultImport,
+  getObjectAssignmentPropNames
 } from './astUtils.js';
 
 import {
@@ -88,6 +89,7 @@ export default {
 	addSpreadElementToArrayNode,
 	deleteSpreadElementFromArrayNode,
 	findDefaultImport,
+  getObjectAssignmentPropNames,
 	fulex,
 	traverse,
 	traverseWithResult,
